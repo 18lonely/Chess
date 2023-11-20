@@ -72,15 +72,15 @@ def score_board(board):
             return -CHECKMATE  # Đen thắng
         else:
             return CHECKMATE  # Trắng thắng
-    elif board.is_stalemate():
+    elif board.is_stalemate() or board.is_insufficient_material() or board.can_claim_threefold_repetition() or board.is_fivefold_repetition() or board.is_seventyfive_moves():
         return STALEMATE
     score = 0
     
-    i = 0
+    board = make_matrix(board)
     for row in range(0, 8):
         for col in range(0, 8):
-            piece = board.piece_at(row * 8 + col)
-            if piece != None:
+            piece = board[row][col]
+            if piece != '.':
                 piece = str(piece)
                 color = 'w' if is_white_piece(piece) else 'b'
                 piece_position_score = 0
@@ -90,15 +90,36 @@ def score_board(board):
                     score += piece_score[color + piece] + piece_position_score
                 if color != 'w':
                     score -= piece_score[color + piece] + piece_position_score
-
     return score
+
+def make_matrix(board): 
+    #type(board) == chess.Board()
+    pgn = board.epd()
+    result = [] 
+    pieces = pgn.split(" ", 1)[0]
+    rows = pieces.split("/")
+    for row in rows:
+        subResult = [] 
+        for thing in row:
+            if thing.isdigit():
+                for i in range(0, int(thing)):
+                    subResult.append('.')
+            else:
+                subResult.append(thing)
+        result.append(subResult)
+    return result
+
 
 def findBestMove(board, valid_moves, return_queue, depth):
     global next_move
     next_move = None
     random.shuffle(valid_moves)
-    minimax(board, valid_moves, depth,
+    # minimax(board, valid_moves, depth,
+    #                          True if board.turn == chess.WHITE else False, depth)
+    
+    minimax_alpha_beta(board, valid_moves, depth, -100000, 100000,
                              True if board.turn == chess.WHITE else False, depth)
+    print(next_move)
     return_queue.put(next_move)
 
 # Minimax
@@ -140,7 +161,57 @@ def minimax(board, valid_move, depth, is_maximzing_player, DEPTH):
             
             board.pop()
         return min_score
+
+# Alpha Beta
+def minimax_alpha_beta(board, valid_move, depth, alpha, beta, is_maximzing_player, DEPTH):
+    global next_move
+    if depth == 0:
+        return score_board(board)
     
+    if is_maximzing_player:
+        max_score = -10000 # -infinity
+        
+        for move in valid_move:
+            board.push(move)
+            next_moves = list(board.legal_moves)
+            
+            node_score = minimax_alpha_beta(board, next_moves, depth - 1, alpha, beta, not is_maximzing_player, DEPTH)
+            
+            if node_score > max_score:
+                max_score = node_score
+                if depth == DEPTH:
+                    next_move = move
+            
+            board.pop()
+            
+            alpha = max(alpha, node_score)
+            if beta <= alpha:
+                break
+
+        return max_score
+        
+    else:
+        min_score = 10000 # +infinity
+        
+        for move in valid_move:
+            board.push(move)
+            next_moves = list(board.legal_moves)
+            
+            node_score = minimax_alpha_beta(board, next_moves, depth - 1, alpha, beta, not is_maximzing_player, DEPTH)
+            
+            if min_score > node_score:
+                min_score = node_score
+                if depth == DEPTH:
+                    next_move = move
+            
+            board.pop()
+            
+            beta = min(beta, node_score)
+            if beta <= alpha:
+                break
+            
+        return min_score
+
 
 def find_random_move(validMoves):
     return validMoves[random.randint(0, len(validMoves) - 1)]

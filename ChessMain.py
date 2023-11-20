@@ -79,6 +79,7 @@ def startGame():
                         for i in range(len(valid_moves)):
                             if move == valid_moves[i] or is_promotion_move == valid_moves[i]:
                                 board.push(valid_moves[i])
+                                print(ChessAI.score_board(board))
                                 move_made = True
                                 animate = True
                                 square_selected = ()  # Hoàn tác click
@@ -111,31 +112,31 @@ def startGame():
                         ai_thinking = False
                     move_undone = True
 
-            # AI move finder
-            if not game_over and not human_turn and not move_undone:
-                if not ai_thinking:
-                    ai_thinking = True
-                    return_queue = Queue()  # used to pass data between threads
-                    move_finder_process = Process(target=ChessAI.findBestMove, args=(board, list(board.legal_moves), return_queue, 3))
-                    move_finder_process.start()
+        # AI move finder
+        if not game_over and not human_turn and not move_undone:
+            if not ai_thinking:
+                ai_thinking = True
+                return_queue = Queue()  # used to pass data between threads
+                move_finder_process = Process(target=ChessAI.findBestMove, args=(board, list(board.legal_moves), return_queue, 3))
+                move_finder_process.start()
 
-                if not move_finder_process.is_alive():
-                    ai_move = return_queue.get()
-                    if ai_move is None:
-                        ai_move = ChessAI.find_random_move(valid_moves)
-                    board.push(ai_move)
-                    
-                    move_made = True
-                    animate = True
-                    ai_thinking = False
+            if not move_finder_process.is_alive():
+                ai_move = return_queue.get()
+                if ai_move is None:
+                    ai_move = ChessAI.find_random_move(valid_moves)
+                board.push(ai_move)
+                print(ChessAI.score_board(board))
+                move_made = True
+                animate = True
+                ai_thinking = False
 
-            if move_made:
-                if animate:
-                    animateMove(getPosition(str(board.move_stack[-1])), screen, make_matrix(board), clock)
-                valid_moves = list(board.legal_moves)
-                move_made = False
-                animate = False
-                move_undone = False
+        if move_made:
+            if animate:
+                animateMove(getPosition(str(board.move_stack[-1])), screen, make_matrix(board), clock)
+            valid_moves = list(board.legal_moves)
+            move_made = False
+            animate = False
+            move_undone = False
 
         drawGameState(screen, make_matrix(board), valid_moves, square_selected, board.turn)
 
