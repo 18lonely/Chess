@@ -2,6 +2,8 @@ import pygame as p
 import pygame_menu
 import chess
 import sys
+import ChessAI
+from multiprocessing import Process, Queue
 
 MENU_PANEL_WIDTH = 380
 MENU_PANEL_HEIGHT = 512
@@ -21,7 +23,7 @@ def loadImages():
     """
     Khai báo hình ảnh
     """
-    pieces = ['P', 'R', 'N', 'B', 'K', 'Q', 'p', 'r', 'n', 'b', 'k', 'q']
+    pieces = ['wP', 'wR', 'wN', 'wB', 'wK', 'wQ', 'bp', 'br', 'bn', 'bb', 'bk', 'bq']
     for piece in pieces:
         IMAGES[piece] = p.transform.scale(p.image.load("images/" + piece + ".png"), (SQUARE_SIZE, SQUARE_SIZE))
 
@@ -49,8 +51,8 @@ def startGame():
     move_undone = False
     move_finder_process = None
     
-    player_one = True  # Nếu là Humen Trắng : True. Nếu là AI : False
-    player_two = True  # Nếu là Hymen Đen: True. Nếu là AI: false
+    player_one = False  # Nếu là Humen Trắng : True. Nếu là AI : False
+    player_two = False  # Nếu là Humen Đen: True. Nếu là AI: false
     
     while running:
         human_turn = (board.turn == chess.WHITE and player_one) or (board.turn == chess.BLACK and player_two)
@@ -113,18 +115,19 @@ def startGame():
             if not game_over and not human_turn and not move_undone:
                 if not ai_thinking:
                     ai_thinking = True
-                    # return_queue = Queue()  # used to pass data between threads
-                    # move_finder_process = Process(target=ChessAI.findBestMove, args=(game_state, valid_moves, return_queue))
-                    # move_finder_process.start()
+                    return_queue = Queue()  # used to pass data between threads
+                    move_finder_process = Process(target=ChessAI.findBestMove, args=(board, list(board.legal_moves), return_queue, 3))
+                    move_finder_process.start()
 
-            # if not move_finder_process.is_alive():
-            #     ai_move = return_queue.get()
-            #     if ai_move is None:
-            #         ai_move = ChessAI.findRandomMove(valid_moves)
-            #     game_state.makeMove(ai_move)
-            #     move_made = True
-            #     animate = True
-            #     ai_thinking = False
+                if not move_finder_process.is_alive():
+                    ai_move = return_queue.get()
+                    if ai_move is None:
+                        ai_move = ChessAI.find_random_move(valid_moves)
+                    board.push(ai_move)
+                    
+                    move_made = True
+                    animate = True
+                    ai_thinking = False
 
             if move_made:
                 if animate:
@@ -201,8 +204,8 @@ def drawPieces(screen, board):
     """
     for row in range(DIMENSION):
         for column in range(DIMENSION):
-            piece = board[row][column]
-            if piece != ".":
+            piece = 'w' + board[row][column] if isWhitePiece(board[row][column]) else 'b' + board[row][column]
+            if piece[1] != ".":
                 screen.blit(IMAGES[piece], p.Rect(column * SQUARE_SIZE + SIZE_WALL, row * SQUARE_SIZE + SIZE_WALL, SQUARE_SIZE, SQUARE_SIZE))
 
 def drawText(screen, text, position, color, fontSize):
@@ -242,7 +245,8 @@ def animateMove(move, screen, board, clock):
         p.draw.rect(screen, color, end_square)
 
         # Thực hiện vẽ các Animation
-        screen.blit(IMAGES[board[move[2]][move[3]]], p.Rect(col * SQUARE_SIZE + SIZE_WALL, row * SQUARE_SIZE + SIZE_WALL, SQUARE_SIZE, SQUARE_SIZE))
+        piece = 'w' + board[move[2]][move[3]] if isWhitePiece(board[move[2]][move[3]]) else 'b' + board[move[2]][move[3]]
+        screen.blit(IMAGES[piece], p.Rect(col * SQUARE_SIZE + SIZE_WALL, row * SQUARE_SIZE + SIZE_WALL, SQUARE_SIZE, SQUARE_SIZE))
         p.display.flip()
         clock.tick(60)
 

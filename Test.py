@@ -33,6 +33,7 @@ def startGame():
     screen.fill(p.Color("white"))
     
     board = chess.Board()
+    
     valid_moves = list(board.legal_moves)
     move_made = False
     animate = False
