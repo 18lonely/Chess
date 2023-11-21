@@ -19,6 +19,17 @@ p.init()
 screen = p.display.set_mode((BOARD_WIDTH + 2 * SIZE_WALL, BOARD_HEIGHT + 2 * SIZE_WALL)) 
 clock = p.time.Clock()
 
+# Globle Vars
+global player_one  # False nếu trắng là AI
+global depth_for_white
+global player_two  # False nếu trắng là AI
+global depth_for_black
+
+player_one = True
+depth_for_white = 3
+player_two = True
+depth_for_black = 3
+    
 def loadImages():
     """
     Khai báo hình ảnh
@@ -51,8 +62,10 @@ def startGame():
     move_undone = False
     move_finder_process = None
     
-    player_one = False  # Nếu là Humen Trắng : True. Nếu là AI : False
-    player_two = False  # Nếu là Humen Đen: True. Nếu là AI: false
+    global player_one
+    global player_two
+    global depth_for_white
+    global depth_for_black
     
     while running:
         human_turn = (board.turn == chess.WHITE and player_one) or (board.turn == chess.BLACK and player_two)
@@ -100,24 +113,15 @@ def startGame():
                         move_undone = True
                             
                 if e.key == p.K_r:  # Reset trò chơi Ctrl + r
-                    board = chess.Board()
-                    valid_moves = list(board.legal_move)
-                    square_selected = ()
-                    player_clicks = []
-                    move_made = False
-                    animate = False
-                    game_over = False
-                    if ai_thinking:
-                        move_finder_process.terminate()
-                        ai_thinking = False
-                    move_undone = True
+                    return
 
         # AI move finder
         if not game_over and not human_turn and not move_undone:
+            depth_turn = depth_for_white if board.turn == chess.WHITE else depth_for_black
             if not ai_thinking:
                 ai_thinking = True
                 return_queue = Queue()  # used to pass data between threads
-                move_finder_process = Process(target=ChessAI.findBestMove, args=(board, list(board.legal_moves), return_queue, 3))
+                move_finder_process = Process(target=ChessAI.findBestMove, args=(board, list(board.legal_moves), return_queue, depth_turn))
                 move_finder_process.start()
 
             if not move_finder_process.is_alive():
@@ -216,7 +220,6 @@ def drawText(screen, text, position, color, fontSize):
     text_rect.center = position
     screen.blit(text_surface, text_rect)
 
-
 def drawEndGameText(screen, text):
     font = p.font.SysFont("Helvetica", 32, True, False)
     text_object = font.render(text, False, p.Color("gray"))
@@ -225,7 +228,6 @@ def drawEndGameText(screen, text):
     screen.blit(text_object, text_location)
     text_object = font.render(text, False, p.Color('black'))
     screen.blit(text_object, text_location.move(2, 2))
-
 
 def animateMove(move, screen, board, clock):
     """
@@ -286,15 +288,30 @@ def make_matrix(board):
         result.append(subResult)
     return result
 
-def options():
-    pass
-
 menu = pygame_menu.Menu('Chess', BOARD_WIDTH + 2 * SIZE_WALL, BOARD_HEIGHT + 2 * SIZE_WALL,
                        theme=pygame_menu.themes.THEME_BLUE)
 
+def setPlayerWhite(selected, value):
+    global player_one
+    player_one = value
+
+def setDepthForWhite(value):
+    global depth_for_white
+    depth_for_white = int(value)
+
+def setPlayerBlack(selected, value):
+    global player_two
+    player_two = value
+
+def setDepthForBlack(value):
+    global depth_for_black
+    depth_for_black = int(value)
 
 menu.add.button('Play', startGame)
-menu.add.button('Options', options)
+menu.add.selector('White: ', [('Humen', True), ('AI', False)], onchange=setPlayerWhite)
+menu.add.range_slider('Depth: ', default=3, range_values=(1, 10), increment=1, value_format=lambda x: str(int(x)), onchange=setDepthForWhite)
+menu.add.selector('Black: ', [('Humen', True), ('AI', False)], onchange=setPlayerBlack)
+menu.add.range_slider('Depth: ', default=3, range_values=(1, 10), increment=1, value_format=lambda x: str(int(x)), onchange=setDepthForBlack)
 menu.add.button('Quit', pygame_menu.events.EXIT)
 
 menu.mainloop(screen)
