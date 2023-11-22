@@ -5,8 +5,8 @@ import sys
 import ChessAI
 from multiprocessing import Process, Queue
 
-MENU_PANEL_WIDTH = 380
-MENU_PANEL_HEIGHT = 512
+# MENU_PANEL_WIDTH = 380
+# MENU_PANEL_HEIGHT = 512
 BOARD_WIDTH = 512
 BOARD_HEIGHT = 512
 DIMENSION = 8
