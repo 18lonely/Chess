@@ -7,14 +7,14 @@ STALEMATE = 0
 piece_score = {"wK": 0, "wQ": 9, "wR": 5, "wB": 3, "wN": 3, "wP": 1,
                "bk": 0, "bq": 9, "br": 5, "bb": 3, "bn": 3, "bp": 1}
 
-knight_scores = [[0.0, 0.1, 0.2, 0.2, 0.2, 0.2, 0.1, 0.0],
-                 [0.1, 0.3, 0.5, 0.5, 0.5, 0.5, 0.3, 0.1],
-                 [0.2, 0.5, 0.6, 0.65, 0.65, 0.6, 0.5, 0.2],
-                 [0.2, 0.55, 0.65, 0.7, 0.7, 0.65, 0.55, 0.2],
-                 [0.2, 0.5, 0.65, 0.7, 0.7, 0.65, 0.5, 0.2],
-                 [0.2, 0.55, 0.6, 0.65, 0.65, 0.6, 0.55, 0.2],
-                 [0.1, 0.3, 0.5, 0.55, 0.55, 0.5, 0.3, 0.1],
-                 [0.0, 0.1, 0.2, 0.2, 0.2, 0.2, 0.1, 0.0]]
+knight_scores = [[0.0, 0.1 , 0.2 , 0.2 , 0.2 , 0.2 , 0.1 , 0.0],
+                 [0.1, 0.3 , 0.5 , 0.5 , 0.5 , 0.5 , 0.3 , 0.1],
+                 [0.2, 0.5 , 0.6 , 0.65, 0.65, 0.6 , 0.5 , 0.2],
+                 [0.2, 0.55, 0.65, 0.7 , 0.7 , 0.65, 0.55, 0.2],
+                 [0.2, 0.5 , 0.65, 0.7 , 0.7 , 0.65, 0.5 , 0.2],
+                 [0.2, 0.55, 0.6 , 0.65, 0.65, 0.6 , 0.55, 0.2],
+                 [0.1, 0.3 , 0.5 , 0.55, 0.55, 0.5 , 0.3 , 0.1],
+                 [0.0, 0.1 , 0.2 , 0.2 , 0.2 , 0.2 , 0.1 , 0.0]]
 
 bishop_scores = [[0.0, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.0],
                  [0.2, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.2],
@@ -26,13 +26,13 @@ bishop_scores = [[0.0, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.0],
                  [0.0, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.0]]
 
 rook_scores = [[0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25],
-               [0.5, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.5],
-               [0.0, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.0],
-               [0.0, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.0],
-               [0.0, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.0],
-               [0.0, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.0],
-               [0.0, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.0],
-               [0.25, 0.25, 0.25, 0.5, 0.5, 0.25, 0.25, 0.25]]
+               [0.5 , 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.5 ],
+               [0.0 , 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.0 ],
+               [0.0 , 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.0 ], 
+               [0.0 , 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.0 ],
+               [0.0 , 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.0 ],
+               [0.0 , 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.0 ],
+               [0.25, 0.25, 0.25, 0.5 , 0.5 , 0.25, 0.25, 0.25]]
 
 queen_scores = [[0.0, 0.2, 0.2, 0.3, 0.3, 0.2, 0.2, 0.0],
                 [0.2, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.2],
@@ -43,14 +43,14 @@ queen_scores = [[0.0, 0.2, 0.2, 0.3, 0.3, 0.2, 0.2, 0.0],
                 [0.2, 0.4, 0.5, 0.4, 0.4, 0.4, 0.4, 0.2],
                 [0.0, 0.2, 0.2, 0.3, 0.3, 0.2, 0.2, 0.0]]
 
-pawn_scores = [[0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8],
-               [0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7],
-               [0.3, 0.3, 0.4, 0.5, 0.5, 0.4, 0.3, 0.3],
+pawn_scores = [[0.8 , 0.8 , 0.8, 0.8 , 0.8 , 0.8, 0.8 , 0.8 ],
+               [0.7 , 0.7 , 0.7, 0.7 , 0.7 , 0.7, 0.7 , 0.7 ],
+               [0.3 , 0.3 , 0.4, 0.5 , 0.5 , 0.4, 0.3 , 0.3 ],
                [0.25, 0.25, 0.3, 0.45, 0.45, 0.3, 0.25, 0.25],
-               [0.2, 0.2, 0.2, 0.4, 0.4, 0.2, 0.2, 0.2],
-               [0.25, 0.15, 0.1, 0.2, 0.2, 0.1, 0.15, 0.25],
-               [0.25, 0.3, 0.3, 0.0, 0.0, 0.3, 0.3, 0.25],
-               [0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2]]
+               [0.2 , 0.2 , 0.2, 0.4 , 0.4 , 0.2, 0.2 , 0.2 ],
+               [0.25, 0.15, 0.1, 0.2 , 0.2 , 0.1, 0.15, 0.25],
+               [0.25, 0.3 , 0.3, 0.0 , 0.0 , 0.3, 0.3 , 0.25],
+               [0.2 , 0.2 , 0.2, 0.2 , 0.2 , 0.2, 0.2 , 0.2 ]]
 
 piece_position_scores = {"wN": knight_scores,
                          "bn": knight_scores[::-1],
@@ -64,23 +64,30 @@ piece_position_scores = {"wN": knight_scores,
                          "bp": pawn_scores[::-1]}
 
 def score_board(board):
-    """
-    Score the board. A positive score is good for white, a negative score is good for black.
-    """
     if board.is_checkmate():
         if board.turn == chess.WHITE:
-            return -CHECKMATE  # Đen thắng
+            return -1000
         else:
-            return CHECKMATE  # Trắng thắng
-    elif board.is_stalemate() or board.is_insufficient_material() or board.can_claim_threefold_repetition() or board.is_fivefold_repetition() or board.is_seventyfive_moves():
+            return 1000 
+    if (board.is_stalemate() or board.is_insufficient_material() 
+          or board.can_claim_threefold_repetition() 
+          or board.is_seventyfive_moves()):
         return STALEMATE
-    score = 0
     
-    board = make_matrix(board)
+    INDEX_MATRIX = [56, 57, 58, 59, 60, 61, 62, 63,
+                    48, 49, 50, 51, 52, 53, 54, 55,
+                    40, 41, 42, 43, 44, 45, 46, 47,
+                    32, 33, 34, 35, 36, 37, 38, 39,
+                    24, 25, 26, 27, 28, 29, 30, 31,
+                    16, 17, 18, 19, 20, 21, 22, 23,
+                     8,  9, 10, 11, 12, 13, 14, 15,
+                     0,  1,  2,  3,  4,  5,  6,  7]
+    
+    score = 0
     for row in range(0, 8):
         for col in range(0, 8):
-            piece = board[row][col]
-            if piece != '.':
+            piece = board.piece_at(INDEX_MATRIX[row * 8 + col])
+            if piece != None:
                 piece = str(piece)
                 color = 'w' if is_white_piece(piece) else 'b'
                 piece_position_score = 0
@@ -91,23 +98,6 @@ def score_board(board):
                 if color != 'w':
                     score -= piece_score[color + piece] + piece_position_score
     return score
-
-def make_matrix(board): 
-    #type(board) == chess.Board()
-    pgn = board.epd()
-    result = [] 
-    pieces = pgn.split(" ", 1)[0]
-    rows = pieces.split("/")
-    for row in rows:
-        subResult = [] 
-        for thing in row:
-            if thing.isdigit():
-                for i in range(0, int(thing)):
-                    subResult.append('.')
-            else:
-                subResult.append(thing)
-        result.append(subResult)
-    return result
 
 
 def findBestMove(board, valid_moves, return_queue, depth):

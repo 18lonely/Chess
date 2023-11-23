@@ -29,7 +29,7 @@ player_one = True
 depth_for_white = 3
 player_two = True
 depth_for_black = 3
-    
+
 def loadImages():
     """
     Khai báo hình ảnh
@@ -44,7 +44,6 @@ def loadWall(screen):
 
 def startGame():
     screen.fill(p.Color("white"))
-    
     board = chess.Board()
     valid_moves = list(board.legal_moves)
     move_made = False
@@ -272,7 +271,6 @@ def getPosition(file):
     return (ranks_to_rows[file[1]], files_to_cols[file[0]], ranks_to_rows[file[3]], files_to_cols[file[2]])
 
 def make_matrix(board): 
-    #type(board) == chess.Board()
     pgn = board.epd()
     result = [] 
     pieces = pgn.split(" ", 1)[0]
