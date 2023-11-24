@@ -16,14 +16,17 @@ IMAGES = {}
 SIZE_WALL = 24
 
 p.init()
-screen = p.display.set_mode((BOARD_WIDTH + 2 * SIZE_WALL, BOARD_HEIGHT + 2 * SIZE_WALL)) 
-clock = p.time.Clock()
+
+global screen
 
 # Globle Vars
+global menu
+
 global player_one  # False nếu trắng là AI
 global depth_for_white
 global player_two  # False nếu trắng là AI
 global depth_for_black
+
 
 player_one = True
 depth_for_white = 3
@@ -43,6 +46,11 @@ def loadWall(screen):
     screen.blit(wall, p.Rect(0, 0, BOARD_WIDTH + 2 * SIZE_WALL, BOARD_HEIGHT + 2 * SIZE_WALL))
 
 def startGame():
+    global menu
+    global screen
+
+    clock = p.time.Clock()
+
     screen.fill(p.Color("white"))
     board = chess.Board()
     valid_moves = list(board.legal_moves)
@@ -50,22 +58,22 @@ def startGame():
     animate = False
     loadImages()
     loadWall(screen)
-    
+
     running = True
-    
-    square_selected = () 
-    player_clicks = [] 
-    
+
+    square_selected = ()
+    player_clicks = []
+
     game_over = False
     ai_thinking = False
     move_undone = False
     move_finder_process = None
-    
+
     global player_one
     global player_two
     global depth_for_white
     global depth_for_black
-    
+
     while running:
         human_turn = (board.turn == chess.WHITE and player_one) or (board.turn == chess.BLACK and player_two)
         event_list = p.event.get()
@@ -77,9 +85,9 @@ def startGame():
             elif e.type == p.MOUSEBUTTONDOWN:
                 if not game_over:
                     location = p.mouse.get_pos()  # (x, y): vị trí click
-                    col = (location[0] - SIZE_WALL) // SQUARE_SIZE 
+                    col = (location[0] - SIZE_WALL) // SQUARE_SIZE
                     row = (location[1] - SIZE_WALL) // SQUARE_SIZE
-                    if square_selected == (row, col) or col >= 8:  # Click giống nhau 2 ô liên tiếp 
+                    if square_selected == (row, col) or col >= 8:  # Click giống nhau 2 ô liên tiếp
                         square_selected = ()  # Xoá ô đã chọn
                         player_clicks = []  # Hoàn tác click
                     else:
@@ -110,8 +118,9 @@ def startGame():
                             move_finder_process.terminate()
                             ai_thinking = False
                         move_undone = True
-                            
+
                 if e.key == p.K_r:  # Reset trò chơi Ctrl + r
+                    menu.enable()
                     return
 
         # AI move finder
@@ -149,10 +158,10 @@ def startGame():
                 drawEndGameText(screen, "Black wins by checkmate")
             else:
                 drawEndGameText(screen, "White wins by checkmate")
-        elif board.is_stalemate() or board.is_insufficient_material() or board.can_claim_threefold_repetition() or board.is_fivefold_repetition() or board.is_seventyfive_moves():
+        elif board.is_stalemate() or board.is_insufficient_material() or board.can_claim_threefold_repetition() or board.is_seventyfive_moves():
             game_over = True
             drawEndGameText(screen, "Stalemate")
-        
+
         clock.tick(MAX_FPS)
         p.display.flip()
 
@@ -173,7 +182,7 @@ def drawBoard(screen):
     """
     global colors
     colors = [p.Color("white"), p.Color("gray")]
-    
+
     for row in range(DIMENSION):
         for column in range(DIMENSION):
             color = colors[((row + column) % 2)]
@@ -259,7 +268,7 @@ def getRankFile(row, col):
     files_to_cols = {"a": 0, "b": 1, "c": 2, "d": 3,
                      "e": 4, "f": 5, "g": 6, "h": 7}
     cols_to_files = {v: k for k, v in files_to_cols.items()}
-    
+
     return cols_to_files[col] + rows_to_ranks[row]
 
 def getPosition(file):
@@ -267,16 +276,16 @@ def getPosition(file):
                      "5": 3, "6": 2, "7": 1, "8": 0}
     files_to_cols = {"a": 0, "b": 1, "c": 2, "d": 3,
                      "e": 4, "f": 5, "g": 6, "h": 7}
-    
+
     return (ranks_to_rows[file[1]], files_to_cols[file[0]], ranks_to_rows[file[3]], files_to_cols[file[2]])
 
-def make_matrix(board): 
+def make_matrix(board):
     pgn = board.epd()
-    result = [] 
+    result = []
     pieces = pgn.split(" ", 1)[0]
     rows = pieces.split("/")
     for row in rows:
-        subResult = [] 
+        subResult = []
         for thing in row:
             if thing.isdigit():
                 for i in range(0, int(thing)):
@@ -285,9 +294,6 @@ def make_matrix(board):
                 subResult.append(thing)
         result.append(subResult)
     return result
-
-menu = pygame_menu.Menu('Chess', BOARD_WIDTH + 2 * SIZE_WALL, BOARD_HEIGHT + 2 * SIZE_WALL,
-                       theme=pygame_menu.themes.THEME_BLUE)
 
 def setPlayerWhite(selected, value):
     global player_one
@@ -305,11 +311,34 @@ def setDepthForBlack(value):
     global depth_for_black
     depth_for_black = int(value)
 
-menu.add.button('Play', startGame)
-menu.add.selector('White: ', [('Humen', True), ('AI', False)], onchange=setPlayerWhite)
-menu.add.range_slider('Depth: ', default=3, range_values=(1, 10), increment=1, value_format=lambda x: str(int(x)), onchange=setDepthForWhite)
-menu.add.selector('Black: ', [('Humen', True), ('AI', False)], onchange=setPlayerBlack)
-menu.add.range_slider('Depth: ', default=3, range_values=(1, 10), increment=1, value_format=lambda x: str(int(x)), onchange=setDepthForBlack)
-menu.add.button('Quit', pygame_menu.events.EXIT)
+def main():
+    global screen
+    global menu
+    screen = p.display.set_mode((BOARD_WIDTH + 2 * SIZE_WALL, BOARD_HEIGHT + 2 * SIZE_WALL))
 
-menu.mainloop(screen)
+    menu = pygame_menu.Menu('Chess', BOARD_WIDTH + 2 * SIZE_WALL, BOARD_HEIGHT + 2 * SIZE_WALL,
+                            theme=pygame_menu.themes.THEME_BLUE)
+
+    menu.add.button('Play', startGame)
+    menu.add.selector('White: ', [('Humen', True), ('AI', False)], onchange=setPlayerWhite)
+    menu.add.range_slider('Depth: ', default=3, range_values=(1, 10), increment=1, value_format=lambda x: str(int(x)),
+                          onchange=setDepthForWhite)
+    menu.add.selector('Black: ', [('Humen', True), ('AI', False)], onchange=setPlayerBlack)
+    menu.add.range_slider('Depth: ', default=3, range_values=(1, 10), increment=1, value_format=lambda x: str(int(x)),
+                          onchange=setDepthForBlack)
+    menu.add.button('Quit', pygame_menu.events.EXIT)
+
+    while True:
+        events = p.event.get()
+        for event in events:
+            if event.type == p.QUIT:
+                exit()
+
+        if menu.is_enabled():
+            menu.update(events)
+            menu.draw(screen)
+
+        p.display.update()
+
+if __name__ == '__main__':
+    main()
