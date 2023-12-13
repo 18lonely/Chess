@@ -1,9 +1,6 @@
 import random
 import chess
 
-CHECKMATE = 1000
-STALEMATE = 0
-
 piece_score = {"wK": 0, "wQ": 9, "wR": 5, "wB": 3, "wN": 3, "wP": 1,
                "bk": 0, "bq": 9, "br": 5, "bb": 3, "bn": 3, "bp": 1}
 
@@ -72,7 +69,7 @@ def score_board(board):
     if (board.is_stalemate() or board.is_insufficient_material() 
           or board.can_claim_threefold_repetition() 
           or board.is_seventyfive_moves()):
-        return STALEMATE
+        return 0
     
     INDEX_MATRIX = [56, 57, 58, 59, 60, 61, 62, 63,
                     48, 49, 50, 51, 52, 53, 54, 55,
@@ -99,7 +96,6 @@ def score_board(board):
                     score -= piece_score[color + piece] + piece_position_score
     return score
 
-
 def findBestMove(board, valid_moves, return_queue, depth):
     global next_move
     next_move = None
@@ -113,7 +109,7 @@ def findBestMove(board, valid_moves, return_queue, depth):
     return_queue.put(next_move)
 
 # Minimax
-def minimax(board, valid_move, depth, is_maximzing_player, DEPTH):
+def minimax(board, valid_move, depth, is_maximzing_player, MAX_DEPTH):
     global next_move
     if depth == 0:
         return score_board(board)
@@ -125,11 +121,11 @@ def minimax(board, valid_move, depth, is_maximzing_player, DEPTH):
             board.push(move)
             next_moves = list(board.legal_moves)
             
-            node_score = minimax(board, next_moves, depth - 1, not is_maximzing_player, DEPTH)
+            node_score = minimax(board, next_moves, depth - 1, not is_maximzing_player, MAX_DEPTH)
             
             if node_score > max_score:
                 max_score = node_score
-                if depth == DEPTH:
+                if depth == MAX_DEPTH:
                     next_move = move
                 
             board.pop()
@@ -142,11 +138,11 @@ def minimax(board, valid_move, depth, is_maximzing_player, DEPTH):
             board.push(move)
             next_moves = list(board.legal_moves)
             
-            node_score = minimax(board, next_moves, depth - 1, not is_maximzing_player, DEPTH)
+            node_score = minimax(board, next_moves, depth - 1, not is_maximzing_player, MAX_DEPTH)
             
             if min_score > node_score:
                 min_score = node_score
-                if depth == DEPTH:
+                if depth == MAX_DEPTH:
                     next_move = move
             
             board.pop()

@@ -57,8 +57,6 @@ def startGame():
     loadImages()
     loadWall(screen)
 
-    running = True
-
     square_selected = ()
     player_clicks = []
 
@@ -71,11 +69,11 @@ def startGame():
     global player_two
     global depth_for_white
     global depth_for_black
-
+    
+    running = True
     while running:
         human_turn = (board.turn == chess.WHITE and player_one) or (board.turn == chess.BLACK and player_two)
         event_list = p.event.get()
-
         for e in event_list:
             if e.type == p.QUIT:
                 p.quit()
@@ -126,7 +124,7 @@ def startGame():
             depth_turn = depth_for_white if board.turn == chess.WHITE else depth_for_black
             if not ai_thinking:
                 ai_thinking = True
-                return_queue = Queue()  # used to pass data between threads
+                return_queue = Queue()
                 move_finder_process = Process(target=ChessAI.findBestMove, args=(board, list(board.legal_moves), return_queue, depth_turn))
                 move_finder_process.start()
 
@@ -202,7 +200,7 @@ def highlightSquares(screen, board, valid_moves, square_selected, turn):
             s.fill(p.Color('blue'))
             screen.blit(s, (col * SQUARE_SIZE + SIZE_WALL, row * SQUARE_SIZE + SIZE_WALL))
             # Highlight ô bắt đầu đi và ô kết thúc
-            s.fill(p.Color('yellow'))
+            s.fill(p.Color('pink'))
             for move in valid_moves:
                 position = getPosition(str(move))
                 if position[0] == row and position[1] == col:
